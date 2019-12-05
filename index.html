@@ -1,0 +1,127 @@
+<DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Gestion de Garage</title>
+	<link rel="shortcut icon" href="/img/favicon.png" />
+	<link rel="stylesheet" type="text/css" href="css/estilos.css">
+</head>
+<body>
+	<h1>Bienvenid@ al Sistema de Gestion de Garage</h1>
+	</br>
+	<h2>Seleccione a continuacion que desea realizar:</h2>
+	<h3>ATENCION: mantenga esta pagina abierta para que el sistema OCR registre el ingreso y egreso de vehiculos</h3>
+	
+</br>
+	<nav>
+		<ul>
+			<li><a href="javascript:espaciodisp()">Espacio Disponible</a></li>
+			</br>
+			<li><a href="javascript:listado()">Listado de autos presentes por patente</a></li>
+			</br>
+			<li><a href="javascript:facturar()">Facturacion</a></li>
+		</ul>
+	</nav>
+</br>
+
+<script> 
+		patente = new String
+		autos = new Array()
+		lleno = "No hay lugares disponibles"
+		entradap = new String
+		salidap = new String
+		var fechaout = new Date()
+		var minout = new Number
+		costominuto = 1.916								//Costo de estadia por minuto, se calculó del cociente del costo por hora entre 60. Definirla previamente 													  facilita su modificacion en caso de variacion del costo.
+		facturacion = new Number
+		facturacion = 0									//El estado de facturacion inicial, ira aumentando con la facuracion a la salida de cada vehiculo
+		entrada = function ingresoDetectado(patente) {	//Funcion que se ejecutaria con el aviso del OCR de ingreso 
+			OCR.get.ElementByValue(patente)
+			entradap = patentes							//Se guarda la patente informada
+			return entrada
+			entradadevehiculo();						//Se ejecuta la funcion de entrada
+		}
+		salida = function salidaDetectada(patente) {	//Funcion que se ejecutaria con el aviso del OCR de egreso
+			OCR.get.ElementbyValue(patente)
+			salidap = patentes 							//Se guarda la patente informada
+			return salida
+			salidavehiculo();							//Se ejecuta la funcion de salida
+		}
+
+
+		entradadevehiculo = function entradav() {
+		if (autos.length <= 100) { 						//Si hay espacio suficiente se permite el ingreso del nuevo dato al array
+			fecha = new Date()
+			momentoin = fecha.getTime() / 60000
+			momentoinexact = Math.round(momentoin)		//Se asigna la informacion de cantidad de minutos (en enteros) desde 1 de enero de 1970, esto facilitará la 											  facturacion luego
+			ingreso = (entradap,momentoinexact)
+			autos.push(ingreso) 						//El metodo push siempre agrega el elemento al final, esto mantiene en todo momento el array ordenado por 												  fecha y hora
+			alert("Ingreso de auto detectado, revise listado para mas información");	//Se informa al operador que el sistema ha guardado correctamente el ingreso
+			} 
+			else {
+			alert(lleno) 								//En caso de que se haya superado el numero maximo se alerta al operador que no hay lugar para el ingreso que											   alerta el OCR
+			}
+		}
+
+		salidavehiculo = function salidav() {
+
+		if (salidaDetectada(patente)) { 
+			for(i=0 ; i<= 100; i++) {					//Se busca en la matriz de coches cual contiene la patente y se copia su index
+				a = i 
+				detector = autos[i]
+			}
+			if (detector[0] = salidap) {
+				b = autos[a][1];						//Tambien se copia el dato de minutos al ingreso 
+				minout = fechaout.getTime()/60000		//se genera la cantidad de minutos actual desde 1 de enero de 1970
+				minoutexact = Math.round(minout)	
+				minoutexact2 = minoutexact-b			//Se calcula la diferencia de minutos desde que ingreso hasta que salio
+				totalconsumo = minoutexact2*costominuto	//Se calcula el total por la estadia 
+				facturacion = facturacion + totalconsumo//Se suma ese total al los ingresos del garage
+				autos.splice(a)							//Se elimina el elemento del array en el index donde se encuentra esa patente
+				}
+			alert("Salida de auto con patente:" + patente +" detectada. El total de estadia es de : $"+totalconsumo) 
+														//Se informa al operador la salida, el numero de patente y el monto a facturar
+			}
+		}
+
+		// ESPACIO DISPONIBLE
+		espaciodisp = function espacio() {
+		libre = new Number
+		enuso = new Number
+		enuso = autos.length
+		libre = 100 - enuso
+		if (autos.length == 100) {
+			alert("No hay lugares disponibles")
+			document.write("El garage esta lleno")
+		} 
+		else {
+		alert("Hay ocupados: " + enuso + "  lugares. " + "Hay libres: " + libre + "  lugares.")
+		}
+
+		listado = function listar() {
+			for (i = 0; i <= 100; i++) {
+		listadoss = autos[i]
+		listados = autos.shift();					//Se copia el valor de la patente de cada elemento de la matriz 									
+		listadott = new String
+		listadott = (listadott + "\n" +listados); 	//Se concatenan las patentes con saltos de pagina
+		}
+			if (listadott == "\n"+"undefined") {	//En caso de que el garage este vacio se da solamente esa informacion
+				alert("El garage esta vacio");
+			}
+			else {									//Sino se muestra el listado de patentes
+			alert(listadott)
+		}
+		if (autos.length == 100) {					//En caso de que el garage este lleno primero se informa esto y luego se listan las patentes
+			alert(lleno);
+			alert(listadott);
+		}
+		}
+
+		facturar = function factura() {				//Se muestra la suma total acumulada de facturacion 
+			alert("El total facturado es: $" + facturacion)
+		}
+	}
+</script>
+	<footer><p>Jonathan Martin 2019</p></footer>		
+</body>
+</html>
